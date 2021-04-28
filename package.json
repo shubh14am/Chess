@@ -4,7 +4,8 @@
   "description": "a complete chess App",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "author": "Shubham",
   "license": "ISC",
@@ -13,5 +14,14 @@
     "http": "0.0.1-security",
     "socket.io": "^4.0.1",
     "socket.io-client": "^4.0.1"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shubh14am/Chess.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shubh14am/Chess/issues"
+  },
+  "homepage": "https://github.com/shubh14am/Chess#readme"
 }

@@ -473,7 +473,12 @@ create.addEventListener("click",()=>{
 socket.on('joinedRoom',()=>{
   me = inid.value;
   inid.value = "";
-  alert("logged in !! ");
+  swal({
+    title: "Success",
+    text: "Logged in as " + me,
+    icon: "success",
+    button: "Yayy!",
+  });
 })
 
 
@@ -495,7 +500,12 @@ socket.on('connectionMade',(to)=>{
       to:opponent
     })
     joinid.value = "";
-    alert("connection made with " + opponent);
+    swal({
+      title: "Connected",
+      text: "connection made with " + opponent,
+      icon: "success",
+      button: "Yayy!",
+    });
   }
 })
 
@@ -511,7 +521,11 @@ msgbtn.addEventListener('click',()=>{
   msg.value = "";
 })
 socket.on('gotmsg',(data)=>{
-  alert("msg recieved :- " + data.msg);
+  swal({
+      title: "msg recieved",
+      text: data.msg,
+      button: "OK",
+    });
 })
 
 socket.on('rcv_up',(data)=>{   // on recieving update.. set updates and invert the board
