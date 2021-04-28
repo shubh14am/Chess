@@ -1,0 +1,169 @@
+html{
+  padding: 0px;
+  margin: 0px;
+  background-color: #292929;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+td {
+  padding: 0px;
+  height: 70px;
+  width: 70px;
+  line-height: 20px;
+  border-collapse: collapse;
+  background-size: 70px;
+  background-repeat: no-repeat;
+  background-position: center;
+  box-shadow: 5px 5px 10px ;
+}
+td:hover{
+  background-size: 78px;
+  background-color: rgba(255, 0, 0, 0.521);
+}
+table {
+  border-spacing: 0px;
+  margin: auto;
+  box-shadow: 5px 5px 10px ;
+
+}
+.highlight{
+  transition: 0.3s;
+  border-radius: 50%;
+  box-shadow: 5px 5px 10px ;
+
+}
+.selected{
+  background-color: rgba(255, 0, 0, 1.0) !important;
+}
+.black{
+  background-color: #294881ad;
+}
+.white {
+  background-color: rgba(128, 137, 154, 0.808);
+  background-size: 70px;
+  background-repeat: no-repeat;
+}
+.black_pawn{
+  background-image: url("../imgs/B_p.png");
+}.white_pawn{
+  background-image: url("../imgs/white_pawn.png");
+}.black_rook{
+  background-image: url("../imgs/B_r.png");
+}.white_rook{
+  background-image: url("../imgs/white_rook.png");
+}.black_knight{
+  background-image: url("../imgs/B_knight.png");
+}.white_knight{
+  background-image: url("../imgs/white_knight1.png");
+}.black_bishop{
+  background-image: url("../imgs/B_b.png");
+}.white_bishop{
+  background-image: url("../imgs/white_bishop1.png");
+}.black_king{
+  background-image: url("../imgs/B_k.png");
+}.white_king{
+  background-image: url("../imgs/white_king.png");
+}.black_queen{
+  background-image: url("../imgs/B_q.png");
+}.white_queen{
+  background-image: url("../imgs/white_queen.png");
+}
+
+.msg{
+  position: absolute;
+  top:80px;
+  left:1000px;
+}
+.in{
+  position: absolute;
+  top:80px;
+  left:50px;
+}
+.btn{
+  /* border: none; */
+  display: inline-block;
+  color: aliceblue;
+  border-radius: 10px;
+  padding: 5px 10px;
+  margin: 10px;
+}
+.btn:hover{
+  border-width: 2px;
+  border-color: whitesmoke;
+}
+.gr{
+  background-color: rgba(21, 216, 53, 0.856);
+}
+.bl{
+  background-color: rgba(5, 71, 255, 0.856);
+}
+input{
+  padding: 5px;
+  border: none;
+  border-radius: 2px;
+}
+
+
+
+input[type="checkbox"]
+{
+    position: absolute;
+    width: 120px;
+    height: 40px;
+    -webkit-appearance: none;
+    background: linear-gradient(0deg,#333,#000);
+    outline: none;
+    border-radius: 20px;
+    box-shadow: 0 0 0 4px #353535,0 0 0 5px #3e3e3e,
+    inset 0 0 10px rgba(0,0,0,1), 0 5px 20px rgba(0,0,0,.5),
+    inset 0 0 15px rgba(0,0,0,.2);
+    
+}
+input[type="checkbox"]:before{
+    content: '';
+    position: absolute; 
+    top: 0;
+    Left: 0;
+    width: 80px;
+    height:40px ;
+    background: linear-gradient(0deg,#000,#6b6b6b);
+    border-radius: 20px;
+    box-shadow:0 0 0 1px #232323;
+    transform:scale(.98,.96);
+    transition: .5s;
+
+}
+input:checked[type="checkbox"]:before{
+    left:40px ;
+    transition: .5s;
+}
+input[type="checkbox"]:after{
+    content: '';
+    position: absolute;
+    top: 18px;
+    Left: 65px;
+    width: 5px;
+    height:5px ;
+    background: linear-gradient(0deg,#000,#6b6b6b);
+    border-radius: 50%;
+    box-shadow:0 0 0 1px #232323;
+    transform:scale(.98,.96);
+    transition: .5s;
+
+}
+input:checked[type="checkbox"]:after{
+    left:105px ;
+    background: rgb(19, 223, 46);
+    transition: .5s;
+    
+}
+input:checked[type="checkbox"]{
+    background: rgb(19, 223, 46);
+
+}
+#AI{
+  font-size: 32px;
+  color: rgb(196, 196, 196);
+  margin: 0px;
+  position: absolute;
+  left: 150px;
+}

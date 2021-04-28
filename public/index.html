@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="theme-color" content="#000000" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./src/css/board.css">
+    <title>Chess</title>
+  </head>
+  <body>
+
+  <div class="switch">
+    <h1 id = "AI">AI🤖</h1>
+    <input type="checkbox" id = "aibtn">
+  </div>
+  <div class="in">
+    <div>
+      <input type="text" placeholder="create your id" id="inid">
+      <button id="create" class="btn bl"> CREATE </button>
+    </div>
+    <div>
+      <input type="text" placeholder="enter join id" id="joinid">
+      <button id="join" class="btn bl"> JOIN </button>
+    </div>
+  </div>
+
+    <div class = "msg">
+      <input type="text" placeholder="enter msg for partner" id="msgbox" >
+      <button id="msgbtn" class = "btn gr"> SEND </button>
+    </div>
+
+    <table id = "Board"></table>
+  </body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="./src/Board.js"></script>
+
+</html>
