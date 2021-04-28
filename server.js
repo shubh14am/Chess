@@ -43,7 +43,7 @@ io.on('connection',(socket)=>{
 app.use('/',express.static(__dirname+'/public'))
 
 
-server.listen(8080 || process.env.PORT ,()=>{
+server.listen(process.env.PORT || 3000 ,()=>{
     console.log("server started at port 3000");
 })
 
