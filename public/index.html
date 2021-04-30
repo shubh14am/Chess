@@ -7,6 +7,7 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta name="theme-color" content="#000000" />
+    <link href='https://use.fontawesome.com/releases/v5.7.2/css/all.css'>
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./src/css/board.css">
@@ -20,21 +21,30 @@
   </div>
   <div class="in">
     <div>
-      <input type="text" placeholder="create your id" id="inid">
+      <input type="text" placeholder="create your id (ex-gmail)" id="inid">
       <button id="create" class="btn bl"> CREATE </button>
+      <div class="myid ID">your id : shubham</div>
     </div>
     <div>
       <input type="text" placeholder="enter join id" id="joinid">
       <button id="join" class="btn bl"> JOIN </button>
+      <div class="opid ID">OP id : kajal</div>
     </div>
+    <div class="ID" id = "turnmsg">Your Turn</div>
   </div>
 
-    <div class = "msg">
-      <input type="text" placeholder="enter msg for partner" id="msgbox" >
-      <button id="msgbtn" class = "btn gr"> SEND </button>
+    <div class="chatBox">
+      <div class="heading">Live Chat</div>
+      <div class="msg"></div>
+      <div class="send">
+        <textarea name="typemsg" id="typemsg" cols="25" rows="2" placeholder="enter your msg here"></textarea>
+        <button class="btn gr" id = "sendbtn">Send</button>
+      </div>
     </div>
 
     <table id = "Board"></table>
+
+    <footer style="text-align: center; color: white; margin-top: 15px; font-size: 10px;"> &#169 Shubham (cypher14)</footer>
   </body>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>

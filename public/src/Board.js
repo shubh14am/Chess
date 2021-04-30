@@ -11,6 +11,30 @@ let thisPlayer = 1;
 
 var Board = (function () {
   // Board class
+
+  let G = document.getElementById("Board");
+  for (let i = 0; i < 8; i++) {
+    let node = document.createElement("tr");
+    G.appendChild(node);
+    let row = G.lastChild;
+    for (let j = 0; j < 8; j++) {
+      node = document.createElement("td");
+      let x = i + 10;
+      let y = j + 10;
+      let a = "c" + x + "" + y; //id for each cell is c + 10+i and 10+j
+
+      row.appendChild(node);
+      row.lastChild.id = a;
+
+      let rem = (thisPlayer === 1 ? 0 : 1);
+      if ((i + j) % 2 === rem) {
+        document.getElementById(a).classList.add("black");
+      } else {
+        document.getElementById(a).classList.add("white");
+      }
+    }
+  }
+
   var M = {};
   M[-1] = "black_pawn";
   M[1] = "white_pawn";
@@ -44,46 +68,52 @@ var Board = (function () {
     for (let j = 0; j < 8; j++) grid[i][j] = 0;
   }
   function initval() {
-    for (let j = 0; j < 8; j++) {
-      grid[1][j] = -1;
-      grid[6][j] = 1;
+    for(let i = 0;i<8;i++){
+      for(let j = 0;j<8;j++){
+        grid[i][j] = 0;
+      }
     }
-    grid[7][0] = 10;
-    grid[7][7] = 10;
-    grid[0][0] = -10;
-    grid[0][7] = -10;
-    grid[7][1] = 8;
-    grid[7][6] = 8;
-    grid[0][1] = -8;
-    grid[0][6] = -8;
-    grid[7][2] = 6;
-    grid[7][5] = 6;
-    grid[0][2] = -6;
-    grid[0][5] = -6;
-    grid[7][3] = 100;
-    grid[7][4] = 1000;
-    grid[0][3] = -100;
-    grid[0][4] = -1000;
+    for (let j = 0; j < 8; j++) {
+      grid[1][j] = -1*thisPlayer;
+      grid[6][j] = 1*thisPlayer;
+    }
+    grid[7][0] = 10*thisPlayer;
+    grid[7][7] = 10*thisPlayer;
+    grid[0][0] = -10*thisPlayer;
+    grid[0][7] = -10*thisPlayer;
+    grid[7][1] = 8*thisPlayer;
+    grid[7][6] = 8*thisPlayer;
+    grid[0][1] = -8*thisPlayer;
+    grid[0][6] = -8*thisPlayer;
+    grid[7][2] = 6*thisPlayer;
+    grid[7][5] = 6*thisPlayer;
+    grid[0][2] = -6*thisPlayer;
+    grid[0][5] = -6*thisPlayer;
+    grid[7][3] = 100*thisPlayer;
+    grid[7][4] = 1000*thisPlayer;
+    grid[0][3] = -100*thisPlayer;
+    grid[0][4] = -1000*thisPlayer;
   }
 
 
   function CM_pawn(i, j, val) {
+    let v = thisPlayer*val;
     let si = i,sj = j;
     let cnt = 1;
     let tmp = i;
-    if (val === -1 && i === 1) cnt = 2;
-    if (val === 1 && i === 6) cnt = 2;
+    if (v === -1 && i === 1) cnt = 2;
+    if (v === 1 && i === 6) cnt = 2;
     let cur = [];
-    while (i - val >= 0 && i - val < 8 && cnt-- > 0 && grid[i - val][j] === 0) {
-      cur.push(new move(val,si,sj,i-val,j));
-      i -= val;
+    while (i - v >= 0 && i - v < 8 && cnt-- > 0 && grid[i - v][j] === 0) {
+      cur.push(new move(val,si,sj,i-v,j));
+      i -= v;
     }
     i = tmp;
-    if (i - val >= 0 && i - val < 8 && j + 1 < 8 && grid[i - val][j + 1] * val < 0 ) {
-      cur.push(new move(val,si,sj,i-val,j+1));
+    if (i - v >= 0 && i - v < 8 && j + 1 < 8 && grid[i - v][j + 1] * val < 0 ) {
+      cur.push(new move(val,si,sj,i-v,j+1));
     }
-    if ( i - val >= 0 && i - val < 8 && j - 1 >= 0 && grid[i - val][j - 1] * val < 0 ) {
-      cur.push(new move(val,si,sj,i-val,j-1));
+    if ( i - v >= 0 && i - v < 8 && j - 1 >= 0 && grid[i - v][j - 1] * val < 0 ) {
+      cur.push(new move(val,si,sj,i-v,j-1));
     }
     return cur;
   }
@@ -315,6 +345,45 @@ var Board = (function () {
     Board.refresh();
   }
 
+  function check_winner(){
+    let score = evaluate();
+    let winner = 0;
+    if(score < -500){ // black wins
+      winner = -1;
+    }else if(score > 500){ // white wins
+      winner = 1;
+    }
+    if(winner === 0)return;
+    if(winner === thisPlayer){
+      swal({
+        title: "Congratulations!!",
+        text: "you won 🙂",
+        icon: "info",
+        button: "Yayy!",
+      });
+      initval();
+      Board.refresh();
+    }else{
+      if(AI){
+        swal({
+          title: "You Played well",
+          text: "AI won !",
+          icon: "info",
+          button: "Wow!",
+        });
+      }else{
+        swal({
+          title: "Better luck next time",
+          text: "you lost 🙁",
+          icon: "info",
+          button: "OK",
+        });
+      }
+      initval();
+      Board.refresh();
+    }
+  }
+
   return {
     // public methods
 
@@ -328,8 +397,8 @@ var Board = (function () {
       let b = (data.si + data.sj) % 2 === 0 ? "black" : "white";
       document.getElementById(id).className = b;
       Board.Grid[data.si][data.sj] = 0;
-      Board.refresh();
       Board.invert();
+      Board.refresh();
     },
 
 
@@ -339,27 +408,28 @@ var Board = (function () {
           let val = Board.Grid[i][j];
           let a = "c" + (i + 10) + "" + (j + 10);
           let cell = document.getElementById(a);
-          cell.className = (i + j) % 2 === 0 ? "black" : "white";
+          let rem = (thisPlayer === 1 ? 0 : 1);
+          cell.className = (i + j) % 2 === rem ? "black" : "white";
           cell.classList.add(M[val]);
         }
+      check_winner();
+
+      if(player === thisPlayer){
+        document.getElementById('turnmsg').style.display = "block";
+      }else{
+        document.getElementById('turnmsg').style.display = "none";
+      }
+
     },
 
     // initialise the board and setup event listeners
     init: function () {
       initval();
-      let grid = document.getElementById("Board");
       for (let i = 0; i < 8; i++) {
-        let node = document.createElement("tr");
-        grid.appendChild(node);
-        let row = grid.lastChild;
         for (let j = 0; j < 8; j++) {
-          node = document.createElement("td");
           let x = i + 10;
           let y = j + 10;
           let a = "c" + x + "" + y; //id for each cell is c + 10+i and 10+j
-
-          row.appendChild(node);
-          row.lastChild.id = a;
 
           document.getElementById(a).addEventListener("click", function () {
             Board.refresh();
@@ -393,16 +463,21 @@ var Board = (function () {
 
                 document.getElementById(id).className = b;
                 Board.Grid[pi][pj] = 0;
-
+                if(AI){
+                  Board.invert();
+                  Board.refresh();
+                }
                 if(AI)setTimeout(() => {
                   AI_move();
+                  Board.invert();
+                  Board.refresh();
                 }, 1000);
                 else{
                   socket.emit('send_up',{  // send move to opponent to update their ui
                     to:opponent,
-                    si:selected.i,
+                    si:7 - selected.i,
                     sj:selected.j,
-                    di:i,
+                    di:7-i,
                     dj:j
                   })
                   Board.invert();
@@ -417,20 +492,11 @@ var Board = (function () {
               selected.val = 0;
             }
           });
-          if ((i + j) % 2 === 0) {
-            document.getElementById(a).classList.add("black");
-          } else {
-            document.getElementById(a).classList.add("white");
-          }
         }
       }
     }
   };
 })();
-
-
-Board.init();
-Board.refresh();
 
 
 
@@ -441,23 +507,32 @@ let create = document.getElementById('create');
 let join = document.getElementById('join');
 let inid = document.getElementById('inid');
 let joinid = document.getElementById('joinid');
-let msgbtn = document.getElementById('msgbtn');
-let msg = document.getElementById('msgbox');
+let sendbtn = document.getElementById('sendbtn');
+let msg = document.getElementById('typemsg');
 let aibtn = document.getElementById('aibtn');
+let msgbox = document.querySelector('.msg');
+let myid = document.querySelector('.myid');
+let opid = document.querySelector('.opid');
+
+// initially hidden
+myid.style.display = "none";
+opid.style.display = "none";
 
 aibtn.addEventListener('change',()=>{
   AI ^= 1;
+  Board.init();
+  Board.refresh();
   if(aibtn.checked){
-    document.getElementById('create').style.display = "none";
-    document.getElementById('join').style.display = "none";
-    document.getElementById('inid').style.display = "none";
-    document.getElementById('joinid').style.display = "none";
+    create.style.display = "none";
+    join.style.display = "none";
+    inid.style.display = "none";
+    joinid.style.display = "none";
   }
   else {
-    document.getElementById('create').style.display = "inline-block";
-    document.getElementById('join').style.display = "inline-block";
-    document.getElementById('inid').style.display = "inline-block";
-    document.getElementById('joinid').style.display = "inline-block";
+    create.style.display = "inline-block";
+    join.style.display = "inline-block";
+    inid.style.display = "inline-block";
+    joinid.style.display = "inline-block";
   }
 })
 
@@ -471,7 +546,11 @@ create.addEventListener("click",()=>{
   })
 })
 socket.on('joinedRoom',()=>{
+  create.style.display = "none";
+  inid.style.display = "none";
   me = inid.value;
+  myid.style.display = "block";
+  myid.textContent = ("Your id :-   " + me);
   inid.value = "";
   swal({
     title: "Success",
@@ -493,8 +572,15 @@ join.addEventListener("click",()=>{
   })
 })
 socket.on('connectionMade',(to)=>{
+
   if(opponent === ""){
+    Board.init();
+    Board.refresh();
     opponent = to.with;
+    join.style.display = "none";
+    joinid.style.display = "none";
+    opid.style.display = "block";
+    opid.textContent = ("Opponent id :-   " + opponent);
     socket.emit('join',{
       from:me,
       to:opponent
@@ -513,7 +599,12 @@ socket.on('connectionMade',(to)=>{
 
 
 // send nd recieve msg
-msgbtn.addEventListener('click',()=>{
+sendbtn.addEventListener('click',()=>{
+  let node = document.createElement("div");
+  node.classList.add("sentmsg");
+  node.classList.add("msgbox");
+  node.innerHTML = msg.value;
+  msgbox.appendChild(node);
   socket.emit('newmsg',{
     to:opponent,
     val:msg.value
@@ -521,14 +612,13 @@ msgbtn.addEventListener('click',()=>{
   msg.value = "";
 })
 socket.on('gotmsg',(data)=>{
-  swal({
-      title: "msg recieved",
-      text: data.msg,
-      button: "OK",
-    });
+  let node = document.createElement("div");
+  node.classList.add("rcvmsg");
+  node.classList.add("msgbox");
+  node.innerHTML = data.msg;
+  msgbox.appendChild(node);
 })
 
 socket.on('rcv_up',(data)=>{   // on recieving update.. set updates and invert the board
   Board.makeMove(data);
 })
-
