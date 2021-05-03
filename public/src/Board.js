@@ -7,11 +7,13 @@ let opponent = "";
 let me = "";
 
 let thisPlayer = 1;
+let check = false;
 
 
 var Board = (function () {
   // Board class
 
+  //  create 2d grid board
   let G = document.getElementById("Board");
   for (let i = 0; i < 8; i++) {
     let node = document.createElement("tr");
@@ -68,6 +70,7 @@ var Board = (function () {
     for (let j = 0; j < 8; j++) grid[i][j] = 0;
   }
   function initval() {
+    check = false;
     for(let i = 0;i<8;i++){
       for(let j = 0;j<8;j++){
         grid[i][j] = 0;
@@ -170,13 +173,6 @@ var Board = (function () {
     }
     return cur;
   }
-  function markCells(valid_moves){
-    for(let i = 0;i<valid_moves.length;i++){
-      let r = valid_moves[i].di;
-      let c = valid_moves[i].dj;
-      document.getElementById("c" + (r+10) + (c + 10) + "").classList.add("highlight");
-    }
-  }
   function isValid(i, j, val,valid_moves) {
     let ok = false;
     if (player !== thisPlayer || val*player < 0) return false;
@@ -187,7 +183,6 @@ var Board = (function () {
     }
     return ok;
   }
-
   function evaluate(){
     let sum = 0;
     for(let i = 0;i<8;i++){
@@ -260,7 +255,27 @@ var Board = (function () {
         valid_moves[j] = temp;
     }
   }
-
+  function isKingSafe(x){
+    let tmp = grid[x.di][x.dj];
+    let v = true;
+    grid[x.di][x.dj] = grid[x.si][x.sj];
+    grid[x.si][x.sj] = 0;
+    let all = genAll(-thisPlayer);
+    for(let i = 0;i<all.length;i++){
+      if(Board.Grid[all[i].di][all[i].dj] * thisPlayer === 1000)v = false;
+    }
+    grid[x.si][x.sj] = grid[x.di][x.dj];
+    grid[x.di][x.dj] = tmp;
+    return v;
+  }
+  function markCells(valid_moves){
+    for(let i = 0;i<valid_moves.length;i++){
+      if(!isKingSafe(valid_moves[i]))continue;
+      let r = valid_moves[i].di;
+      let c = valid_moves[i].dj;
+      document.getElementById("c" + (r+10) + (c + 10) + "").classList.add("highlight");
+    }
+  }
   var cnt = 0;
   function miniMax(p,depth,alpha,beta){
     cnt++;
@@ -339,6 +354,9 @@ var Board = (function () {
       grid[si][sj] = f;
       grid[di][dj] = s;
     }
+    if(mn > 500){ // ai has lost 
+
+    }
     console.log(cnt);
     grid[bestMove.di][bestMove.dj] = grid[bestMove.si][bestMove.sj];
     grid[bestMove.si][bestMove.sj] = 0;
@@ -403,7 +421,12 @@ var Board = (function () {
 
 
     refresh: function () {
-      for (let i = 0; i < 8; i++)
+      let all = genAll(-thisPlayer);
+      check = false;
+      for(let i = 0;i<all.length;i++){
+        if(Board.Grid[all[i].di][all[i].dj] * thisPlayer === 1000)check = true;
+      }
+      for (let i = 0; i < 8; i++){
         for (let j = 0; j < 8; j++) {
           let val = Board.Grid[i][j];
           let a = "c" + (i + 10) + "" + (j + 10);
@@ -411,13 +434,57 @@ var Board = (function () {
           let rem = (thisPlayer === 1 ? 0 : 1);
           cell.className = (i + j) % 2 === rem ? "black" : "white";
           cell.classList.add(M[val]);
+          if(check && Board.Grid[i][j]*thisPlayer === 1000){
+            cell.classList.add("selected");
+          }
         }
+      }
       check_winner();
-
+      if(check && player === thisPlayer){ // see if check mate is possible
+        all = genAll(thisPlayer);
+        let checkMate = true;
+        for(let i = 0;i<all.length;i++){
+          let tmp = Board.Grid[all[i].di][all[i].dj]; // make move
+          Board.Grid[all[i].di][all[i].dj] = Board.Grid[all[i].si][all[i].sj];
+          Board.Grid[all[i].si][all[i].sj] = 0;
+          let opAll = genAll(-thisPlayer);
+          let end = false;
+          for(let j = 0;j<opAll.length;j++){
+            if(Board.Grid[opAll[j].di][opAll[j].dj] * thisPlayer === 1000){
+              end = true;
+            }
+          }
+          if(!end)checkMate = false;
+          Board.Grid[all[i].si][all[i].sj] = Board.Grid[all[i].di][all[i].dj];
+          Board.Grid[all[i].di][all[i].dj] = tmp; // undo
+        }
+        if(checkMate){
+          setTimeout(() => {
+            swal({
+              title: "Check Mate!!",
+              text: "Game over",
+              icon: "info",
+              button: "Start New",
+            }); 
+          }, 1000);
+          setTimeout(() => {
+            socket.emit('send_up',{  // send reset signal for new game
+              to:opponent,
+              si:-1,
+              sj:-1,
+              di:-1,
+              dj:-1
+            })
+            initval();
+            Board.refresh();
+          }, 2000);
+        }
+      }
       if(player === thisPlayer){
-        document.getElementById('turnmsg').style.display = "block";
+        if(check)document.getElementById('turnmsg').textContent= "Check!!";
+        else document.getElementById('turnmsg').textContent= "Your Turn";
       }else{
-        document.getElementById('turnmsg').style.display = "none";
+        document.getElementById('turnmsg').textContent = "";
       }
 
     },
@@ -444,8 +511,10 @@ var Board = (function () {
               selected.val = val;
               selected.i = i;
               selected.j = j;
-              if (val)document.getElementById("c" + (i + 10) + (j + 10) + "").classList.add("selected");
-              markCells(gen(val,i,j)); // mark generated valid cells
+              if (val * thisPlayer > 0){
+                document.getElementById("c" + (i + 10) + (j + 10) + "").classList.add("selected");
+                markCells(gen(val,i,j)); // mark generated valid cells
+              }
             } else if (same_pos || same_team) {
               // tapping on same cell twice || killing same team
               selected.i = -1;
@@ -455,13 +524,8 @@ var Board = (function () {
               let pi = selected.i;
               let pj = selected.j;
               
-              if (isValid(i, j, selected.val,gen(Board.Grid[pi][pj],pi,pj))) {
+              if (isValid(i, j, selected.val,gen(Board.Grid[pi][pj],pi,pj)) && isKingSafe(new move(selected.val,pi,pj,i,j))) {
                 Board.Grid[i][j] = selected.val;
-
-                let id = "c" + (pi + 10) + (pj + 10) + "";
-                let b = (pi + pj) % 2 === 0 ? "black" : "white";
-
-                document.getElementById(id).className = b;
                 Board.Grid[pi][pj] = 0;
                 if(AI){
                   Board.invert();
@@ -471,7 +535,7 @@ var Board = (function () {
                   AI_move();
                   Board.invert();
                   Board.refresh();
-                }, 1000);
+                }, 300);
                 else{
                   socket.emit('send_up',{  // send move to opponent to update their ui
                     to:opponent,
@@ -596,8 +660,6 @@ socket.on('connectionMade',(to)=>{
 })
 
 
-
-
 // send nd recieve msg
 sendbtn.addEventListener('click',()=>{
   let node = document.createElement("div");
@@ -620,5 +682,8 @@ socket.on('gotmsg',(data)=>{
 })
 
 socket.on('rcv_up',(data)=>{   // on recieving update.. set updates and invert the board
-  Board.makeMove(data);
+  if(data.si === -1){
+    Board.init();
+    Board.refresh();
+  }else Board.makeMove(data);
 })
