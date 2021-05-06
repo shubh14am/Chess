@@ -12,10 +12,22 @@ let aibtn = document.getElementById('aibtn');
 let msgbox = document.querySelector('.msg');
 let myid = document.querySelector('.myid');
 let opid = document.querySelector('.opid');
+let modal = document.getElementById('modal');
+let chatBox = document.querySelector('.chatBox');
+let Switch = document.querySelector('.switch');
+let joinBox = document.querySelector('.joinBox');
+let turnMsg = document.getElementById('turnmsg');
+
 
 // initially hidden
 myid.style.display = "none";
 opid.style.display = "none";
+chatBox.style.display = "none";
+Switch.style.display = "none";
+joinBox.style.display = "none";
+turnMsg.style.display = "none";
+
+
 
 
 var move = function(val,si,sj,di,dj){ // move constructor
@@ -372,7 +384,7 @@ var chessLogic = (function(){
 				let s = Board.data.grid[di][dj];
 				Board.makeMove(valid_moves[i]);
 
-				let cur = miniMax(Board.data.thisPlayer,5,-10000,10000);
+				let cur = miniMax(Board.data.thisPlayer,4,-10000,10000);
 				if(cur < mn){
 					mn = cur;
 					bestMove = valid_moves[i];
@@ -541,6 +553,18 @@ var UIctrl = (function(){
 				icon: "info",
 				button: "Wow!"
 			});
+		},
+		show : function(x){x.style.display = "block"},
+		hide : function(x){x.style.display = "none"},
+		
+		modalControl : function(){
+			modal.style.display = "none";
+			document.getElementById('Board').style.filter = "blur(0px)";
+			Switch.style.display = "block";
+			joinBox.style.display = "block";
+			turnMsg.style.display = "block";
+			create.style.display = "none";
+			inid.style.display = "none";
 		}
   	}
 
@@ -557,12 +581,11 @@ var socketConnection = (function(B){
 			// join room
 			create.addEventListener("click",()=>{
 				socket.emit('login',{
-				id:inid.value
+					id:inid.value
 				})
 			})
 			socket.on('joinedRoom',()=>{
-				create.style.display = "none";
-				inid.style.display = "none";
+				UIctrl.modalControl();
 				B.setme(inid.value);
 				myid.style.display = "block";
 				myid.textContent = ("Your id :-   " + B.data.me);
@@ -584,6 +607,7 @@ var socketConnection = (function(B){
 
 
 			socket.on('connectionMade',(to)=>{
+				chatBox.style.display = "block";
 
 				if(B.data.opponent === ""){
 					Board.initval();

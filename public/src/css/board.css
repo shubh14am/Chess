@@ -2,6 +2,7 @@ html{
   background-color: #292929;
   font-family: 'Noto Sans TC', sans-serif;
 }
+
 /********************************  Board CSS   *********************************/
 
 td {
@@ -23,7 +24,12 @@ table {
   border-spacing: 0px;
   margin: auto;
   box-shadow: 5px 5px 10px ;
+  filter: blur(5px);
 
+
+}
+#Board{
+  margin-top: 70px;
 }
 .highlight{
   transition: 0.3s;
@@ -35,10 +41,10 @@ table {
   background-color: rgba(255, 0, 0, 1.0) !important;
 }
 .black{
-  background-color: #294881ad;
+  background-color: #0af1a0ad;
 }
 .white {
-  background-color: rgba(128, 137, 154, 0.808);
+  background-color: rgba(211, 218, 187, 0.808);
   background-size: 70px;
   background-repeat: no-repeat;
 }
@@ -119,6 +125,7 @@ input{
 input[type="checkbox"]
 {
     position: absolute;
+    top: 10px;
     width: 120px;
     height: 40px;
     -webkit-appearance: none;
@@ -179,6 +186,7 @@ input:checked[type="checkbox"]{
   color: rgb(196, 196, 196);
   margin: 0px;
   position: absolute;
+  top: 10px;
   left: 150px;
 }
 
@@ -190,7 +198,7 @@ input:checked[type="checkbox"]{
   background-size: 300px 500px;
   position: absolute;
   top:20px;
-  left:940px;
+  right: 50px;
   border-radius: 10px;
   width: 300px;
   height: 500px;
@@ -208,7 +216,8 @@ input:checked[type="checkbox"]{
   padding: 15px;
   color: white;
   margin-bottom: 20px;
-  background-color: #04CB28;
+  background-color: #292929;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
 }
@@ -244,4 +253,20 @@ input:checked[type="checkbox"]{
 .sentmsg{
   position: relative;
   left: 70px;
+}
+#sendbtn{
+   background-color: #292929;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+#modal{
+  padding: 50px;
+  background-color:white;
+  position: absolute;
+  top: 160px;
+  left: 525px;
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  z-index: 100;
 }

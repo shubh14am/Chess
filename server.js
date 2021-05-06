@@ -11,6 +11,12 @@ var users = {};
 io.on('connection',(socket)=>{
     console.log("connected with socket id = " + socket.id);
     socket.on('login',(game)=>{  // join room
+        let str = game.id;
+        let ok = false;
+        for(let i = 0;i<str.length;i++){
+            if(str[i] != ' ')ok = true;
+        }
+        if(!ok)return;
         socket.join(game.id);
         users[game.id] = 1;
         console.log("new connection with " + game.id);
