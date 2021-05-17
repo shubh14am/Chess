@@ -15,37 +15,43 @@
   </head>
   <body>
 
-  <div class="switch">
-    <h1 id = "AI">AI🤖</h1>
-    <input type="checkbox" id = "aibtn">
-  </div>
-  <div class="in">
-    <div id = "modal">
-      <input type="text" placeholder="create your id (ex-gmail)" id="inid" style="border: solid 1px black;">
-      <button id="create" class="btn bl"> CREATE </button>
-    </div>
-
-    <div class="joinBox">
-      <div class="myid ID"></div>
-      <input type="text" placeholder="enter join id" id="joinid">
-      <button id="join" class="btn bl"> JOIN </button>
-      <div class="opid ID"></div>
-    </div>
-    <div class="ID" id = "turnmsg"></div>
-  </div>
-
-    <div class="chatBox">
-      <div class="heading">Live Chat</div>
-      <div class="msg"></div>
-      <div class="send">
-        <textarea name="typemsg" id="typemsg" cols="25" rows="2" placeholder="enter your msg here"></textarea>
-        <button class="btn gr" id = "sendbtn">Send</button>
+      <div class="switch">
+        <h1 id = "AI">AI🤖</h1>
+        <input type="checkbox" id = "aibtn">
       </div>
-    </div>
 
-    <table id = "Board"></table>
+      <div class="in">
+        <div id = "modal">
+          <input type="text" placeholder="create your id (ex-gmail)" id="inid" style="border: solid 1px black;">
+          <button id="create" class="btn bl"> CREATE </button>
+        </div>
 
-    <footer style="text-align: center; color: white; margin-top: 15px; font-size: 10px;"> &#169 Shubham (cypher14)</footer>
+        <div class="joinBox">
+          <div class="myid ID"></div>
+          <input type="text" placeholder="enter join id" id="joinid">
+          <button id="join" class="btn bl"> JOIN </button>
+          <div class="opid ID"></div>
+        </div>
+
+        <div class="ID" id = "turnmsg"></div>
+
+        <button id="undobtn" class="btn bl"> UNDO </button>
+      </div>
+
+  
+      <table id = "Board"></table>
+
+
+      <div class="chatBox">
+        <div class="heading">Live Chat</div>
+        <div class="msg"></div>
+        <div class="send">
+          <textarea name="typemsg" id="typemsg" cols="25" rows="2" placeholder="enter your msg here"></textarea>
+          <button class="btn gr" id="sendbtn">Send</button>
+        </div>
+      </div>
+
+      <footer style="text-align: center; color: white; margin-top: 15px; font-size: 10px;"> &#169 Shubham (cypher14)</footer>
   </body>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>

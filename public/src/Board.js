@@ -17,6 +17,7 @@ let chatBox = document.querySelector('.chatBox');
 let Switch = document.querySelector('.switch');
 let joinBox = document.querySelector('.joinBox');
 let turnMsg = document.getElementById('turnmsg');
+let undo = document.getElementById('undobtn');
 
 
 // initially hidden
@@ -26,9 +27,10 @@ chatBox.style.display = "none";
 Switch.style.display = "none";
 joinBox.style.display = "none";
 turnMsg.style.display = "none";
+undo.style.display = "none";
 
 
-
+var statesHistory = []; // stack of prev 10 states
 
 var move = function(val,si,sj,di,dj){ // move constructor
 	this.val = val;
@@ -37,12 +39,7 @@ var move = function(val,si,sj,di,dj){ // move constructor
 	this.di = di;
 	this.dj = dj;
 }
-
-
-// board class will contain all board data and player data
-var Board = (function () {
-
-	var M = {};
+var M = {};
 	M[-1] = "black_pawn";
 	M[1] = "white_pawn";
 	M[-10] = "black_rook";
@@ -55,6 +52,18 @@ var Board = (function () {
 	M[-100] = "black_queen";
 	M[1000] = "white_king";
 	M[-1000] = "black_king";
+
+var gg = new Array(8);
+for(let i  = 0;i<8;i++)gg[i] = new Array(8);
+var state = {
+	grid : gg
+};
+
+statesHistory.push(state);
+
+
+// board class will contain all board data and player data
+var Board = (function () {
 
 
 	// all data of board
@@ -94,6 +103,22 @@ var Board = (function () {
 		// public methods
 
 		data : boardStats,
+		set : function(cur){
+			for(let i = 0;i<8;i++)for(let j = 0;j<8;j++)boardStats.grid[i][j] = state.grid[i][j];
+		},
+		get : function(){
+			state.dummy = false; // not a dummy state
+			state.grid = boardStats.grid;
+			state.player = boardStats.player;
+			state.thisPlayer= boardStats.thisPlayer;
+			state.AI = boardStats.AI;
+			state.check = boardStats.check;
+			if(statesHistory.length > 10)statesHistory.shift();
+			statesHistory.push(state);
+			console.log("state saved");
+
+		},
+
 		togglePlayer : function(){
 			boardStats.player *= -1;
 		},
@@ -132,6 +157,7 @@ var Board = (function () {
 				boardStats.grid[i] = new Array(8);
 				for (let j = 0; j < 8; j++) boardStats.grid[i][j] = 0;
 			}
+			// state.grid = boardStats.grid;
 			boardStats.check = false;
 			let p = boardStats.thisPlayer;
 			let V = boardStats.pieceToVal;
@@ -375,6 +401,7 @@ var chessLogic = (function(){
 			let mn = 10000;
 			let bestMove = new move(0,0,0,0,0);
 			for(let i = 0;i<valid_moves.length;i++){
+				
 				let si = valid_moves[i].si;
 				let sj = valid_moves[i].sj;
 				let di = valid_moves[i].di;
@@ -629,28 +656,28 @@ var socketConnection = (function(B){
 		},
 
 		sendNrcvMsg : function(){
-		// send msg
-		sendbtn.addEventListener('click',()=>{
-			let node = document.createElement("div");
-			node.classList.add("sentmsg");
-			node.classList.add("msgbox");
-			node.innerHTML = msg.value;
-			msgbox.appendChild(node);
-			socket.emit('newmsg',{
-			to : B.data.opponent,
-			val : msg.value
+			// send msg
+			sendbtn.addEventListener('click',()=>{
+				let node = document.createElement("div");
+				node.classList.add("sentmsg");
+				node.classList.add("msgbox");
+				node.innerHTML = msg.value;
+				msgbox.appendChild(node);
+				socket.emit('newmsg',{
+				to : B.data.opponent,
+				val : msg.value
+				})
+				msg.value = "";
 			})
-			msg.value = "";
-		})
 
-		// rcv msg
-		socket.on('gotmsg',(data)=>{
-			let node = document.createElement("div");
-			node.classList.add("rcvmsg");
-			node.classList.add("msgbox");
-			node.innerHTML = data.msg;
-			msgbox.appendChild(node);
-		})
+			// rcv msg
+			socket.on('gotmsg',(data)=>{
+				let node = document.createElement("div");
+				node.classList.add("rcvmsg");
+				node.classList.add("msgbox");
+				node.innerHTML = data.msg;
+				msgbox.appendChild(node);
+			})
 
 		}
   	}
@@ -781,7 +808,14 @@ var Game = (function(B,UI,IO){ // input parameters are board object and UI ctrl 
 						let pj = B.data.selected.j;
 								
 						if (chessLogic.isValid(i, j, B.data.selected.val , chessLogic.gen(B.data.grid[pi][pj],pi,pj)) && chessLogic.isKingSafe(new move(B.data.selected.val ,pi ,pj ,i ,j))) {
+							// console.log(B.data.grid[5][3]);
+							// B.get();
+							for(let x = 0;x<8;x++)for(let y = 0;y<8;y++)state.grid[x][y] = B.data.grid[x][y];
+							statesHistory.push(state);
+
 							B.makeMove(new move(-1,pi,pj,i,j));
+
+
 							if(B.data.AI){
 								B.togglePlayer();
 								refresh();
@@ -791,7 +825,7 @@ var Game = (function(B,UI,IO){ // input parameters are board object and UI ctrl 
 									chessLogic.AI_move();
 									B.togglePlayer();
 									refresh();
-								}, 500);
+								}, 1500);
 							}else{
 								socket.emit('send_up',{  // send move to opponent to update their ui
 									to : B.data.opponent,
@@ -824,18 +858,32 @@ aibtn.addEventListener('change',()=>{
 	Game.initBoard();
 	Game.refresh();
 	if(aibtn.checked){
+		undo.style.display = "block";
 		create.style.display = "none";
 		join.style.display = "none";
 		inid.style.display = "none";
 		joinid.style.display = "none";
 	}
 	else {
+		undo.style.display = "none";
 		create.style.display = "inline-block";
 		join.style.display = "inline-block";
 		inid.style.display = "inline-block";
 		joinid.style.display = "inline-block";
 	}
-});  
+}); 
+
+undo.addEventListener('click',()=>{
+	if(statesHistory.length === 0){
+		alert("cant undo");
+		return;
+	}
+	let cur = statesHistory.pop();
+	console.log(cur);
+	Board.set(cur);
+	Game.refresh();
+	console.log(Board.data);
+})
 
 UIctrl.buildGrid();
 Game.init();
